@@ -1,0 +1,409 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Tier AWS Architecture Diagram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+        }
+        
+        .diagram {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px;
+            min-height: 800px;
+        }
+        
+        /* VPC Container */
+        .vpc {
+            position: relative;
+            border: 4px solid #ff9900;
+            border-radius: 15px;
+            padding: 60px 30px 30px 30px;
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe6cc 100%);
+            min-height: 700px;
+        }
+        
+        .vpc-label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: #ff9900;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 8px rgba(255,153,0,0.3);
+        }
+        
+        .cidr {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: white;
+            color: #ff9900;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: 2px solid #ff9900;
+        }
+        
+        /* Internet Gateway */
+        .internet-gateway {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .internet-gateway::before {
+            content: "";
+            font-size: 1.5em;
+        }
+        
+        /* Subnets Container */
+        .subnets-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .subnet {
+            border: 3px solid;
+            border-radius: 12px;
+            padding: 40px 20px 20px 20px;
+            position: relative;
+            min-height: 500px;
+        }
+        
+        .public-subnet {
+            border-color: #27ae60;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+        
+        .private-subnet {
+            border-color: #e74c3c;
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        }
+        
+        .subnet-label {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .public-subnet .subnet-label {
+            background: #27ae60;
+        }
+        
+        .private-subnet .subnet-label {
+            background: #e74c3c;
+        }
+        
+        .subnet-cidr {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: bold;
+            background: white;
+        }
+        
+        /* Resources */
+        .resource {
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .resource:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+        
+        .resource-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .resource-title {
+            font-weight: bold;
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .resource-details {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .ec2 {
+            border-left: 4px solid #ff9900;
+        }
+        
+        .rds {
+            border-left: 4px solid #3498db;
+            margin-top: 60px;
+        }
+        
+        .s3 {
+            border-left: 4px solid #e67e22;
+        }
+        
+        /* Route Table */
+        .route-table {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(52,152,219,0.3);
+        }
+        
+        /* Security Group Badge */
+        .security-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-top: 8px;
+        }
+        
+        /* Connection Lines */
+        .connection-note {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(52,152,219,0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            text-align: center;
+            max-width: 300px;
+        }
+        
+        /* Tags Display */
+        .tag-display {
+            background: #f39c12;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        
+        /* Availability Zone */
+        .az-badge {
+            position: absolute;
+            top: 50px;
+            right: 15px;
+            background: #9b59b6;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 1200px) {
+            .subnets-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> 3-Tier AWS Architecture</h1>
+        <p class="subtitle">CloudFormation Template Design</p>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff9900;"></div>
+                <span>VPC</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #27ae60;"></div>
+                <span>Public Subnet</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e74c3c;"></div>
+                <span>Private Subnet</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #667eea;"></div>
+                <span>Internet Gateway</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3498db;"></div>
+                <span>Route Table</span>
+            </div>
+        </div>
+        
+        <div class="diagram">
+            <div class="vpc">
+                <div class="vpc-label">VPC</div>
+                <div class="cidr">10.0.0.0/16</div>
+                <div class="internet-gateway">Internet Gateway</div>
+                
+                <div class="subnets-container">
+                    <!-- Public Subnet -->
+                    <div class="subnet public-subnet">
+                        <div class="subnet-label"> Public Subnet</div>
+                        <div class="subnet-cidr">10.0.1.0/24</div>
+                        <div class="az-badge">AZ: eu-central-1a</div>
+                        
+                        <div class="resource ec2">
+                            <div class="resource-icon"></div>
+                            <div class="resource-title">EC2 Instance</div>
+                            <div class="resource-details">
+                                <strong>Amazon Linux 2</strong><br>
+                                Instance Type: t2.micro<br>
+                                Public IP: Auto-assign<br>
+                                <span class="security-badge">SSH (22) + HTTP (80)</span><br>
+                                <span class="tag-display">Name: MyInstance-Green{EnvironmentType}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="route-table">
+                             Route Table<br>
+                             0.0.0.0/0  IGW
+                        </div>
+                    </div>
+                    
+                    <!-- Private Subnet -->
+                    <div class="subnet private-subnet">
+                        <div class="subnet-label"> Private Subnet</div>
+                        <div class="subnet-cidr">10.0.2.0/24</div>
+                        <div class="az-badge">AZ: eu-central-1a</div>
+                        
+                        <div class="resource rds">
+                            <div class="resource-icon"></div>
+                            <div class="resource-title">RDS Instance</div>
+                            <div class="resource-details">
+                                <strong>MySQL Database</strong><br>
+                                Engine: mysql<br>
+                                Instance: db.t3.micro<br>
+                                Storage: 20 GB<br>
+                                Multi-AZ: No<br>
+                                <span class="security-badge">Private Access Only</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resource s3">
+                            <div class="resource-icon"></div>
+                            <div class="resource-title">S3 Bucket</div>
+                            <div class="resource-details">
+                                <strong>Data Storage</strong><br>
+                                Name: Green{AWS::StackName}-bucket<br>
+                                Encryption: AES-256<br>
+                                Versioning: Disabled<br>
+                                Access: Private
+                            </div>
+                        </div>
+                        
+                        <div class="connection-note">
+                             EC2 cannot directly access DB over Internet - VPC internal communication only
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

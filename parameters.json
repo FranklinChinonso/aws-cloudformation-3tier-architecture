@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "my-keypair"
+  },
+  {
+    "ParameterKey": "EnvironmentType",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "DBName",
+    "ParameterValue": "mydatabase"
+  },
+  {
+    "ParameterKey": "DBUser",
+    "ParameterValue": "admin"
+  },
+  {
+    "ParameterKey": "DBPassword",
+    "ParameterValue": "YourSecurePassword123"
+  }
+]
