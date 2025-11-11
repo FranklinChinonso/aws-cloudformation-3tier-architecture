@@ -127,29 +127,6 @@ VPC (10.0.0.0/16)
    curl http://<EC2-Public-IP>
 ```
 
-### Option 2: AWS CLI
-```bash
-# Validate template
-aws cloudformation validate-template --template-body file://template.yml
-
-# Create stack
-aws cloudformation create-stack \
-  --stack-name my-3tier-stack \
-  --template-body file://template.yml \
-  --parameters file://parameters.json \
-  --region eu-central-1
-
-# Monitor status
-aws cloudformation describe-stacks \
-  --stack-name my-3tier-stack \
-  --query 'Stacks[0].StackStatus'
-
-# View outputs
-aws cloudformation describe-stacks \
-  --stack-name my-3tier-stack \
-  --query 'Stacks[0].Outputs'
-```
-
 ##  Project Structure
 ```
 .
@@ -167,15 +144,6 @@ aws cloudformation describe-stacks \
 ##  Cost Estimation
 
 ### Monthly Cost Breakdown (us-east-1)
-
-| Service | Resource | Monthly Cost |
-|---------|----------|--------------|
-| EC2 | t2.micro (1 instance) | ~$8.50 |
-| RDS | db.t3.micro (1 instance) | ~$15.00 |
-| S3 | Standard (first 50 TB) | ~$0.023/GB |
-| VPC | Internet Gateway | Free |
-| Data Transfer | First 1 GB/month | Free |
-| **Total** | **(excluding data)** | **~$23.50** |
 
 *Note: Costs vary by region and usage. This is an estimate.*
 
